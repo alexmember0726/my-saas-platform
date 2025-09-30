@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { withValidation } from "@/lib/validateRequest";
+import { createOrganizationSchema } from "@/lib/schemas";
 
 /**
  * @swagger
@@ -33,27 +35,23 @@ import { prisma } from "@/lib/db";
  *       401:
  *         description: Unauthorized
  */
-export async function POST(req: Request) {
-  const userId = req.headers.get("x-user-id");
-  if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+export const POST = withValidation(createOrganizationSchema)(
+    async (req: Request, data: any) => {
+        const userId = req.headers.get("x-user-id");
+        if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { name, description } = await req.json();
+        try {
+            const organization = await prisma.organization.create({
+                data
+            });
 
-  try {
-    const organization = await prisma.organization.create({
-      data: {
-        name,
-        description,
-        ownerId: userId,
-      },
-    });
-
-    return NextResponse.json(organization);
-  } catch (err) {
-    console.error(err);
-    return NextResponse.json({ error: "Failed to create organization" }, { status: 500 });
-  }
-}
+            return NextResponse.json(organization);
+        } catch (err) {
+            console.error(err);
+            return NextResponse.json({ error: "Failed to create organization" }, { status: 500 });
+        }
+    }
+);
 
 /**
  * @swagger
@@ -76,19 +74,19 @@ export async function POST(req: Request) {
  *       401:
  *         description: Unauthorized
  */
-export async function GET(req: Request) {
-  const userId = req.headers.get("x-user-id");
-  if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+export const GET = async (req: Request) => {
+    const userId = req.headers.get("x-user-id");
+    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  try {
-    const organizations = await prisma.organization.findMany({
-      where: { ownerId: userId },
-      include: { projects: true },
-    });
+    try {
+        const organizations = await prisma.organization.findMany({
+            where: { ownerId: userId },
+            include: { projects: true },
+        });
 
-    return NextResponse.json(organizations);
-  } catch (err) {
-    console.error(err);
-    return NextResponse.json({ error: "Failed to fetch organizations" }, { status: 500 });
-  }
+        return NextResponse.json(organizations);
+    } catch (err) {
+        console.error(err);
+        return NextResponse.json({ error: "Failed to fetch organizations" }, { status: 500 });
+    }
 }

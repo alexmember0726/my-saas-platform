@@ -49,7 +49,7 @@ const JWT_SECRET = process.env.NEXTAUTH_SECRET || "dev-secret";
  *       500:
  *         description: Server error
  */
-export async function POST(req: Request) {
+export const POST =  async (req: Request) => {
   try {
     const { email, password } = await req.json();
     const user = await prisma.user.findUnique({ where: { email } });

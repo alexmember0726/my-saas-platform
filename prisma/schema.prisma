@@ -45,6 +45,7 @@ model Project {
   featureToggles Json?      // Optional feature toggles per project
   events        Event[]
   createdAt     DateTime   @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model ApiKey {
@@ -54,6 +55,7 @@ model ApiKey {
   keyHash   String   // Hashed key
   last4     String   // Last 4 chars for display
   active    Boolean  @default(true)
+  revoked   Boolean  @default(false)
   createdAt DateTime @default(now())
 }
 

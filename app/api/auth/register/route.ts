@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { hashPassword } from "@/lib/auth";
+import { withValidation } from "@/lib/validateRequest";
+import { createUserSchema } from "@/lib/schemas";
 
 /**
  * @swagger
@@ -28,22 +30,21 @@ import { hashPassword } from "@/lib/auth";
  *       400:
  *         description: User already exists
  */
-export async function POST(req: Request) {
+export const POST = withValidation(createUserSchema)(async (req: Request, data) => {
   try {
-    const { email, password, name } = await req.json();
 
     // Check if user already exists
-    const existingUser = await prisma.user.findUnique({ where: { email } });
+    const existingUser = await prisma.user.findUnique({ where: { email: data.email } });
     if (existingUser) return NextResponse.json({ error: "User already exists" }, { status: 400 });
 
-    const hashedPassword = await hashPassword(password);
+    const hashedPassword = await hashPassword(data.password);
 
     const user = await prisma.user.create({
-      data: { email, password: hashedPassword, name },
+      data
     });
 
     return NextResponse.json({ id: user.id, email: user.email, name: user.name });
   } catch (err) {
     return NextResponse.json({ error: "Failed to register" }, { status: 500 });
   }
-}
+})
