@@ -2,7 +2,7 @@ import swaggerJSDoc from "swagger-jsdoc";
 
 export const swaggerSpec = swaggerJSDoc({
   definition: {
-    openapi: "3.0.0",
+    openapi: "3.0.0", 
     info: {
       title: "My SaaS Platform API",
       version: "1.0.0",
@@ -13,6 +13,29 @@ export const swaggerSpec = swaggerJSDoc({
         url: "http://localhost:3000/api",
       },
     ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+        },
+      },
+      schemas: {
+        Organization: {
+          type: "object",
+          properties: {
+            id: { type: "string" },
+            name: { type: "string" },
+            description: { type: "string" },
+            ownerId: { type: "string" },
+            projects: { type: "array", items: { type: "object" } },
+            createdAt: { type: "string", format: "date-time" },
+            updatedAt: { type: "string", format: "date-time" },
+          },
+        },
+      },
+    },
   },
-  apis: ["./app/api/**/*.ts"], // Path to files with JSDoc comments
+  apis: ["./app/api/**/*.ts"], // point to your route files with JSDoc
 });

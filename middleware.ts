@@ -8,7 +8,7 @@ export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   // Skip auth for public endpoints
-  if (pathname.startsWith("/api/auth")) {
+  if (pathname.startsWith("/api/auth") || pathname.startsWith("/api/docs")) {
     return NextResponse.next();
   }
 
@@ -31,10 +31,12 @@ export async function middleware(req: NextRequest) {
       request: { headers: requestHeaders },
     });
   } catch (err) {
+    console.log(err);
     return NextResponse.json({ error: "Invalid or expired token" }, { status: 401 });
   }
 }
 
 export const config = {
   matcher: ["/api/:path*"], // apply middleware to all API routes
+  runtime: "nodejs"
 };
