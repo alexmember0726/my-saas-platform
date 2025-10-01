@@ -30,7 +30,7 @@ import { createUserSchema } from "@/lib/schemas";
  *       400:
  *         description: User already exists
  */
-export const POST = withValidation(createUserSchema)(async (req: Request, data) => {
+export const POST = withValidation(createUserSchema)(async (req: Request, ctx:any, data:any) => {
   try {
 
     // Check if user already exists
@@ -40,7 +40,10 @@ export const POST = withValidation(createUserSchema)(async (req: Request, data) 
     const hashedPassword = await hashPassword(data.password);
 
     const user = await prisma.user.create({
-      data
+      data: {
+        email: data.email,
+        password: hashedPassword
+      }
     });
 
     return NextResponse.json({ id: user.id, email: user.email, name: user.name });

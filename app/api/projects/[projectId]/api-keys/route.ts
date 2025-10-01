@@ -135,6 +135,7 @@ export const GET = async (req: Request, { params }: { params: Promise<{ projectI
   const keys = project.apiKeys.map((k: any) => ({
     id: k.id,
     name: k.name,
+    revoked: k.revoked,
     key: maskKey(k.apiKey), // show only last 4 chars (may be we can show fully)
     secret: "*".repeat(28) + k.last4, // show only last 4 chars
     createdAt: k.createdAt,

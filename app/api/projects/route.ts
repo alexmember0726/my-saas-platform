@@ -39,7 +39,7 @@ import { validateRequest, withValidation } from "@/lib/validateRequest";
  *       403:
  *         description: Forbidden
  */
-export const POST = withValidation(createProjectSchema)(async (req: Request, data: any) => {
+export const POST = withValidation(createProjectSchema)(async (req: Request, ctx: any, data: any) => {
     const userId = req.headers.get("x-user-id");
     if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 

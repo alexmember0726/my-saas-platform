@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { generateApiKey, generateSecretKey, hashApiKey, maskKey } from "@/lib/apiKey";
+import { generateApiKey, generateSecretKey, hashSecretKey } from "@/lib/apiKey";
 import { NextResponse } from "next/server";
 
 /**
@@ -59,7 +59,7 @@ export const PUT = async (req: Request, { params }: { params: Promise<{ projectI
 
   const newKey = generateApiKey();
   const newSecret = generateSecretKey();
-  const hashed = await hashApiKey(newSecret);
+  const hashed = await hashSecretKey(newSecret);
 
   await prisma.apiKey.update({
     where: { id: apiKey.id },

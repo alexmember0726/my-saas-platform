@@ -56,7 +56,6 @@ model ApiKey {
   apiKey    String  // api key
   keyHash   String   // hashed long-lived secret
   last4     String // last 4 chars of secret key
-  prefix   String   // prefix of secret key
   revoked   Boolean  @default(false)
   createdAt DateTime @default(now())
   rotatedAt  DateTime?
