@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { updateProjectSchema } from "@/lib/schemas";
-import { validateRequest, withValidation } from "@/lib/validateRequest";
+import { withValidation } from "@/lib/validateRequest";
 
 /**
  * @swagger
@@ -26,13 +26,15 @@ import { validateRequest, withValidation } from "@/lib/validateRequest";
  *       403:
  *         description: Forbidden
  */
-export async function GET(req: Request, { params }: { params: { projectId: string } }) {
+export async function GET(req: Request, { params }: { params: Promise<{ projectId: string }> }) {
     const userId = req.headers.get("x-user-id");
-    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if(!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    const { projectId } = await params;
 
     const project = await prisma.project.findUnique({
-        where: { id: params.projectId },
-        include: { apiKeys: true, organization: true },
+        where: { id: projectId },
+        include: { organization: true },
     });
 
     if (!project || project.organization.ownerId !== userId) {
@@ -82,12 +84,14 @@ export async function GET(req: Request, { params }: { params: { projectId: strin
  *       403:
  *         description: Forbidden
  */
-export const PUT = withValidation(updateProjectSchema)(async (req: Request, { params }, data) => {
+export const PUT = withValidation(updateProjectSchema)(async (req: Request, { params }: {params: Promise<{projectId: string}>}, data) => {
     const userId = req.headers.get("x-user-id");
     if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+    const { projectId } = await params;
+
     const project = await prisma.project.findUnique({
-        where: { id: params.projectId },
+        where: { id: projectId },
         include: { organization: true },
     });
 
@@ -96,7 +100,7 @@ export const PUT = withValidation(updateProjectSchema)(async (req: Request, { pa
     }
 
     const updated = await prisma.project.update({
-        where: { id: params.projectId },
+        where: { id: projectId },
         data
     });
 
@@ -126,12 +130,14 @@ export const PUT = withValidation(updateProjectSchema)(async (req: Request, { pa
  *       403:
  *         description: Forbidden
  */
-export const DELETE = async (req: Request, { params }: { params: { projectId: string } }) => {
+export const DELETE = async (req: Request, { params }: { params: Promise<{ projectId: string }> }) => {
     const userId = req.headers.get("x-user-id");
     if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+    const { projectId } = await params;
+
     const project = await prisma.project.findUnique({
-        where: { id: params.projectId },
+        where: { id: projectId },
         include: { organization: true },
     });
 
@@ -139,7 +145,7 @@ export const DELETE = async (req: Request, { params }: { params: { projectId: st
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    await prisma.project.delete({ where: { id: params.projectId } });
+    await prisma.project.delete({ where: { id: projectId } });
 
     return NextResponse.json({ success: true });
 }

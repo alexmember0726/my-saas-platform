@@ -50,20 +50,23 @@ model Project {
 
 model ApiKey {
   id        String   @id @default(cuid())
+  name       String?
   projectId String
   project   Project  @relation(fields: [projectId], references: [id])
-  keyHash   String   // Hashed key
-  last4     String   // Last 4 chars for display
-  active    Boolean  @default(true)
+  apiKey    String  // api key
+  keyHash   String   // hashed long-lived secret
+  last4     String // last 4 chars of secret key
+  prefix   String   // prefix of secret key
   revoked   Boolean  @default(false)
   createdAt DateTime @default(now())
+  rotatedAt  DateTime?
 }
 
 model Event {
   id        String   @id @default(cuid())
   projectId String
   project   Project  @relation(fields: [projectId], references: [id])
-  type      String
+  name      String
   metadata  Json?
   createdAt DateTime @default(now())
 }

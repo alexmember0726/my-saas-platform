@@ -31,3 +31,8 @@ export const updateProjectSchema = z.object({
   allowedDomains: z.array(z.string()).optional(),
   featureToggles: z.record(z.string(), z.any()).optional()
 });
+
+// Api key
+export const createApiKeySchema = z.object({
+    name: z.string().min(1, "Name is required"),
+});

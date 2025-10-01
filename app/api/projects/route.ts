@@ -74,7 +74,7 @@ export const GET = async (req: Request) => {
 
     const projects = await prisma.project.findMany({
         where: { organization: { ownerId: userId } },
-        include: { apiKeys: true },
+        include: { apiKeys: false },
     });
 
     return NextResponse.json(projects);
