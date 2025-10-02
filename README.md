@@ -41,7 +41,7 @@ npm install
 Create a `.env` file in the root:
 
 ```env
-DATABASE_URL="postgresql://postgres:123456@localhost:5432/mysaas?schema=public"
+DATABASE_URL="postgresql://user:password@host:port/dbName?schema=public"
 WEBHOOK_SECRET_KEY="whsec_somerandomhighsecuritystring1234567890abcdef"
 NEXTAUTH_SECRET="dev-secret"
 ```
@@ -50,6 +50,22 @@ NEXTAUTH_SECRET="dev-secret"
 ```bash
 npx prisma migrate dev --name init
 npx prisma generate
+```
+
+### 4️⃣ Run Test
+```bash
+npm run test
+```
+
+### 5️⃣ Run Dev Mode
+```bash
+npm run dev
+```
+
+### 6️⃣ Build and run product mode
+```bash
+npm run build
+npm start
 ```
 
 ---
@@ -68,7 +84,7 @@ npx prisma generate
 
 ### Event Tracking Flow (`/api/track`)
 
-1. Generate short-lived token via `/api/token-exchange` using long-lived API key with `Authorization: Basic base64(API_KEY:SECRET_KEY)`
+1. Generate short-lived token via `/api/token-exchange` using Api key and Secrte key with `Authorization: Basic base64(API_KEY:SECRET_KEY)`
 2. Call `/api/track` with `Authorization: Bearer <short-lived token>`
 3. Server validates token, domain, rate-limit, then stores event in DB
 
