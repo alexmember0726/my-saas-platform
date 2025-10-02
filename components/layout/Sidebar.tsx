@@ -4,7 +4,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Briefcase, LayoutDashboard, Settings, Code, Menu } from 'lucide-react';
+import { Briefcase, LayoutDashboard, Code } from 'lucide-react';
 
 interface SidebarProps {
     isOpen: boolean;

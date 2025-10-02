@@ -1,7 +1,8 @@
+// api/track/route.ts
+
 import { verifyShortLivedToken } from "@/lib/apiKey";
 import { prisma } from "@/lib/db";
-import { NextApiRequest } from "next";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 const ORIGIN_HEADER = 'Origin';
 const REFERER_HEADER = 'Referer';
@@ -9,26 +10,22 @@ const RATE_LIMIT = 10; // per minute (may be set on project)
 const requests: Record<string, { count: number; last: number }> = {};
 const WINDOW = 60 * 1000;
 
-interface TrackRequestBody {
-    name: string;
-    metadata: Record<string, any>;
-}
 
 // the client should short lived jwt token to track event
 // format: Authorization: Bearer JWT_TOKEN
-export const  POST = async (request: NextApiRequest) => {
+export const POST = async (request: Request) => {
     // 1. Key Extraction
-    const authHeader = request.headers["authorization"];
+    const authHeader = request.headers.get("authorization");
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    
+
     const token = authHeader.split(" ")[1];
-    
+
     // Determine the source domain for validation
-    const origin = request.headers[ORIGIN_HEADER];
-    const referer = request.headers[REFERER_HEADER];
+    const origin = request.headers.get(ORIGIN_HEADER);
+    const referer = request.headers.get(REFERER_HEADER);
     const domainToValidate = origin || referer || '';
 
     // 2. token verification using hmac/jwt
@@ -43,12 +40,12 @@ export const  POST = async (request: NextApiRequest) => {
             include: { project: true }
         });
 
-        if(!keyRecord) {
+        if (!keyRecord) {
             return NextResponse.json({ error: 'Unauthorized: Invalid API Key' }, { status: 401 });
         }
 
         const valid = verifyShortLivedToken(token, keyRecord.keyHash);
-        if(!valid) {
+        if (!valid) {
             return NextResponse.json({ error: 'Unauthorized: Invalid API Key' }, { status: 401 });
         }
 
@@ -56,14 +53,17 @@ export const  POST = async (request: NextApiRequest) => {
         const { project } = keyRecord;
         const allowedDomains = project.allowedDomains.map(d => d.trim());
         const isAllowed = allowedDomains.includes('*') || allowedDomains.includes(domainToValidate);
-        
+
         if (!isAllowed) {
             console.warn(`Forbidden access: Domain '${domainToValidate}' not allowed for project ${project.id}`);
             return NextResponse.json({ error: `Forbidden: Domain '${domainToValidate}' not authorized.` }, { status: 403 });
         }
 
         // 4. Rate Limiting Check (we can check this one using middleware + radis, but for the testing I will use in-memory rate limiting check)
-        const ip = request.headers["x-forwarded-for"] || request.socket.remoteAddress || "unknown";
+        const ip =
+            request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+            request.headers.get("x-real-ip") ||
+            "unknown";
         const now = Date.now();
         if (!requests[ip as string] || now - requests[ip as string].last > WINDOW) {
             requests[ip as string] = { count: 1, last: now };
@@ -75,7 +75,7 @@ export const  POST = async (request: NextApiRequest) => {
         }
 
         // 5. Input Validation (Sanity Check for payload)
-        const data = request.body as TrackRequestBody;
+        const data = await request.json();
         if (!data.name || typeof data.metadata !== 'object') {
             return NextResponse.json({ error: 'Bad Request: Invalid event structure.' }, { status: 400 });
         }
@@ -89,9 +89,9 @@ export const  POST = async (request: NextApiRequest) => {
             }
         });
 
-         return NextResponse.json({ message: 'Event accepted' }, { status: 202 });
+        return NextResponse.json({ message: 'Event accepted' }, { status: 202 });
 
-    } catch(e) {
+    } catch {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 }

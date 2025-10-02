@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { createProjectSchema } from "@/lib/schemas";
-import { validateRequest, withValidation } from "@/lib/validateRequest";
+import { withValidation } from "@/lib/validateRequest";
 
 /**
  * @swagger

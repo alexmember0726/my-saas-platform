@@ -62,7 +62,7 @@ export const POST =  async (req: Request) => {
     const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: "24h" });
 
     return NextResponse.json({ token, user: { id: user.id, email: user.email, name: user.name } });
-  } catch (err) {
+  } catch {
     return NextResponse.json({ error: "Failed to login" }, { status: 500 });
   }
 }

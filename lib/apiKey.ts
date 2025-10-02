@@ -72,8 +72,10 @@ export function verifyShortLivedToken(token: string, signingSecret: string) {
             return null; // Token expired
         }
 
-        return payload as { p: string, a: string };
-    } catch (e) {
+        const { p, a } = payload;
+
+        return { p, a };
+    } catch {
         return null;
     }
 }
@@ -117,7 +119,7 @@ export function verifyWebhookHmac(rawBody: Buffer | string, signatureHeader: str
         }
 
         return crypto.timingSafeEqual(expectedBuffer, receivedBuffer);
-    } catch (e) {
+    } catch {
         // Handle potential errors if buffers cannot be created (e.g., invalid hex strings)
         return false;
     }

@@ -10,8 +10,6 @@ export default function ProjectEventsPage({ params }: {params: Promise<{ orgId: 
     
     const { orgId, projectId } = use(params);
 
-    console.log(orgId, projectId)
-
     if (!orgId || !projectId) {
         notFound();
     }

@@ -23,13 +23,11 @@ export default function OrganizationsPage() {
     // --- CORRECTED Placeholder Logic ---
     // The input parameter must be OrganizationFormData, which the form provides.
     const handleCreate = async (data: OrganizationFormData) => {
-        console.log('Creating', data);
         await create(data);
         closeModal();
     };
 
     const handleUpdate = async (id: string, data: OrganizationFormData) => {
-        console.log('Updating', id, data);
         await update(id, data);
         closeModal();
     };
@@ -37,7 +35,6 @@ export default function OrganizationsPage() {
     const handleDelete = (id: string, name: string) => {
         if (confirm(`Are you sure you want to delete organization "${name}"? This action cannot be undone.`)) {
             remove(id); 
-            console.log('Deleting', id);
         }
     };
 

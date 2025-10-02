@@ -40,10 +40,13 @@ export const POST = withValidation(createOrganizationSchema)(
         const userId = req.headers.get("x-user-id");
         if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-        data.ownerId = userId;
         try {
             const organization = await prisma.organization.create({
-                data
+                data: {
+                    ownerId: userId,
+                    name: data.name,
+                    description: data.description
+                }
             });
 
             return NextResponse.json(organization);

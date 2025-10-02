@@ -17,8 +17,6 @@ export function OrganizationContextualLayoutClient({ children, orgId }: Organiza
     // The activeOrgId is now correctly resolved in the Server Component and passed down
     const activeOrgId = orgId;
     
-    console.log("activeOrgId (Client)", activeOrgId); 
-    
     // Sidebar logic applies whether orgId is null or present
     const contentShiftClass = isSidebarOpen ? 'lg:pl-64' : 'lg:pl-0'; 
 
@@ -35,7 +33,6 @@ export function OrganizationContextualLayoutClient({ children, orgId }: Organiza
             <div className={`transition-all duration-300 ${contentShiftClass}`}>
                 
                 <Header 
-                    isSidebarOpen={isSidebarOpen} 
                     toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} 
                 />
                 

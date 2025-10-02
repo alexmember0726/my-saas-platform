@@ -4,7 +4,7 @@
 import React, { use } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Briefcase, LayoutDashboard, Code } from 'lucide-react'; 
+import { Briefcase, LayoutDashboard } from 'lucide-react'; 
 
 // Assuming these files exist/are used:
 import { useOrganizations } from '@/hooks/useOrganizations'; 
@@ -45,8 +45,7 @@ export default function OrganizationDashboardPage({ params }: { params: Promise<
     projects, 
     analytics, 
     isLoading: isLoadingDashboard, 
-    error, 
-    refetch 
+    error 
   } = useOrganizationDashboard(orgId); // <-- The hook now takes orgId
   
   // Fetch organization list to get the organization's name

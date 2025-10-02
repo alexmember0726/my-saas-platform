@@ -4,6 +4,7 @@ import { hashPassword } from "@/lib/auth";
 import { withValidation } from "@/lib/validateRequest";
 import { createUserSchema } from "@/lib/schemas";
 
+
 /**
  * @swagger
  * /auth/register:
@@ -30,7 +31,7 @@ import { createUserSchema } from "@/lib/schemas";
  *       400:
  *         description: User already exists
  */
-export const POST = withValidation(createUserSchema)(async (req: Request, ctx:any, data:any) => {
+export const POST = withValidation(createUserSchema)(async (req: Request, ctx: any, data:any) => {
   try {
 
     // Check if user already exists
@@ -41,13 +42,14 @@ export const POST = withValidation(createUserSchema)(async (req: Request, ctx:an
 
     const user = await prisma.user.create({
       data: {
+        name: data.name,
         email: data.email,
         password: hashedPassword
       }
     });
 
     return NextResponse.json({ id: user.id, email: user.email, name: user.name });
-  } catch (err) {
+  } catch {
     return NextResponse.json({ error: "Failed to register" }, { status: 500 });
   }
 })

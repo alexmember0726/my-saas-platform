@@ -3,10 +3,10 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { useProjectApiKeys, CreateKeyData } from '@/hooks/useProjectApiKeys';
-import { RotateCcw, Trash2, Key, Check, AlertTriangle } from 'lucide-react';
+import { useProjectApiKeys } from '@/hooks/useProjectApiKeys';
+import { RotateCcw, Trash2, Check, AlertTriangle } from 'lucide-react';
 import { Modal } from '@/components/common/Modal'; // Use your existing Modal component
-import { ApiKeyListItem, NewApiKeyResponse, RotateApiKeyResponse } from '@/types/apikey';
+import { NewApiKeyResponse, RotateApiKeyResponse } from '@/types/apikey';
 import { CopyToClipboard } from '@/components/common/CopyToClipboard'; // Requires a helper component
 
 // --- State Definitions for Modals ---

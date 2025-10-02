@@ -1,7 +1,7 @@
 // components/project/ProjectEventsClient.tsx
 'use client';
 
-import React, { useRef, useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import Link from 'next/link';
 import { List, AlertTriangle, Key } from 'lucide-react';
 import { useOrganizationProjects } from '@/hooks/useOrganizationProjects';

@@ -1,7 +1,7 @@
 // lib/api/project.ts
 
 import { apiFetch } from './client';
-import { Project, ProjectFormData, ApiKeyResponse } from '@/types/project';
+import { Project, ProjectFormData } from '@/types/project';
 
 /**
  * Corresponds to: GET /api/projects - Gets a list of all projects the user can access.

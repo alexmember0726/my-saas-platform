@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/db';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
 /**
  * @swagger
@@ -35,7 +35,7 @@ import { NextRequest, NextResponse } from 'next/server';
  *       500:
  *         description: Server error
  */
-export const GET = async (req: NextRequest, { params }: { params: Promise<{ organizationId: string }> }) => {
+export const GET = async (req: Request, { params }: { params: Promise<{ organizationId: string }> }) => {
   try {
     const userId = req.headers.get("x-user-id");
     if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

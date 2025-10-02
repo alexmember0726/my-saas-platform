@@ -19,6 +19,14 @@ const eslintConfig = [
       "build/**",
       "next-env.d.ts",
     ],
+    "overrides": [
+      {
+        "files": ["**/legacy/**/*.ts", "**/path/to/specific/utility.ts"],
+        "rules": {
+          "@typescript-eslint/no-explicit-any": "off"
+        }
+      }
+    ]
   },
 ];
 

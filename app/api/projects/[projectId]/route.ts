@@ -27,21 +27,25 @@ import { withValidation } from "@/lib/validateRequest";
  *         description: Forbidden
  */
 export async function GET(req: Request, { params }: { params: Promise<{ projectId: string }> }) {
-    const userId = req.headers.get("x-user-id");
-    if(!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    try {
+        const userId = req.headers.get("x-user-id");
+        if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const { projectId } = await params;
+        const { projectId } = await params;
 
-    const project = await prisma.project.findUnique({
-        where: { id: projectId },
-        include: { organization: true },
-    });
+        const project = await prisma.project.findUnique({
+            where: { id: projectId },
+            include: { organization: true },
+        });
 
-    if (!project || project.organization.ownerId !== userId) {
-        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+        if (!project || project.organization.ownerId !== userId) {
+            return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+        }
+
+        return NextResponse.json(project);
+    } catch {
+        return NextResponse.json({ error: "Failed to fetch project" }, { status: 500 });
     }
-
-    return NextResponse.json(project);
 }
 
 /**
@@ -84,27 +88,32 @@ export async function GET(req: Request, { params }: { params: Promise<{ projectI
  *       403:
  *         description: Forbidden
  */
-export const PUT = withValidation(updateProjectSchema)(async (req: Request, { params }: {params: Promise<{projectId: string}>}, data) => {
-    const userId = req.headers.get("x-user-id");
-    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+export const PUT = withValidation(updateProjectSchema)(async (req: Request, { params }: { params: Promise<{ projectId: string }> }, data) => {
+    try {
+        const userId = req.headers.get("x-user-id");
+        if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const { projectId } = await params;
+        const { projectId } = await params;
 
-    const project = await prisma.project.findUnique({
-        where: { id: projectId },
-        include: { organization: true },
-    });
+        const project = await prisma.project.findUnique({
+            where: { id: projectId },
+            include: { organization: true },
+        });
 
-    if (!project || project.organization.ownerId !== userId) {
-        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+        if (!project || project.organization.ownerId !== userId) {
+            return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+        }
+
+        const updated = await prisma.project.update({
+            where: { id: projectId },
+            data
+        });
+
+        return NextResponse.json(updated);
+    } catch {
+        return NextResponse.json({ error: "Failed to update project" }, { status: 500 });
     }
 
-    const updated = await prisma.project.update({
-        where: { id: projectId },
-        data
-    });
-
-    return NextResponse.json(updated);
 });
 
 /**
@@ -131,21 +140,26 @@ export const PUT = withValidation(updateProjectSchema)(async (req: Request, { pa
  *         description: Forbidden
  */
 export const DELETE = async (req: Request, { params }: { params: Promise<{ projectId: string }> }) => {
-    const userId = req.headers.get("x-user-id");
-    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    try {
+        const userId = req.headers.get("x-user-id");
+        if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const { projectId } = await params;
+        const { projectId } = await params;
 
-    const project = await prisma.project.findUnique({
-        where: { id: projectId },
-        include: { organization: true },
-    });
+        const project = await prisma.project.findUnique({
+            where: { id: projectId },
+            include: { organization: true },
+        });
 
-    if (!project || project.organization.ownerId !== userId) {
-        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+        if (!project || project.organization.ownerId !== userId) {
+            return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+        }
+
+        await prisma.project.delete({ where: { id: projectId } });
+
+        return NextResponse.json({ success: true });
+    } catch {
+        return NextResponse.json({ error: "Failed to delete project" }, { status: 500 });
     }
 
-    await prisma.project.delete({ where: { id: projectId } });
-
-    return NextResponse.json({ success: true });
 }

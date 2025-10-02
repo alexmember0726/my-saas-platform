@@ -1,3 +1,5 @@
+// api/token-exchange/route.ts
+
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { generateShortLivedToken, verifySecretKey } from "@/lib/apiKey";

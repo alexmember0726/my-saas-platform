@@ -6,12 +6,10 @@ import Link from 'next/link';
 import { Briefcase, LogOut, Menu } from 'lucide-react'; // Using lucide-react for modern icons
 
 interface HeaderProps {
-    // These props are less relevant for an organization-focused header, but kept for compatibility
-    isSidebarOpen: boolean; 
     toggleSidebar: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ isSidebarOpen, toggleSidebar }) => {
+export const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
     const { user, logout } = useAuth();
     
     // --- Placeholder for Contextual Data ---
