@@ -91,7 +91,7 @@ npm start
 ### Webhook Flow (`/api/webhooks`)
 
 - Incoming webhook validated via HMAC signature
-- Example receiver and sender code available here
+- Example sender code available here
 ```
 const crypto = require("crypto");
 const axios = require("axios");
